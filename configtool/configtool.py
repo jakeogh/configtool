@@ -114,7 +114,7 @@ def get_data_dir(*,
                                    debug=debug,)
 
     data_dir = cfg_dir / Path('data')
-    os.mkdirs(data_dir, exist_ok=True)
+    os.makedirs(data_dir, exist_ok=True)
 
     return data_dir
 
