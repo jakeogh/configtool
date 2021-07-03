@@ -1,1 +1,1 @@
-#from .configtool import configtool
+from .configtool import get_data_dir

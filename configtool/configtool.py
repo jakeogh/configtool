@@ -78,6 +78,7 @@ def get_config_directory(*,
                          ):
     if verbose:
         ic(click_instance, click_instance.get_app_dir(app_name))
+    assert len(app_name) > 0
     result = Path(click_instance.get_app_dir(app_name))
     if verbose:
         ic(result)
@@ -98,6 +99,24 @@ def get_config_ini_path(*,
 
     cfg = cfg_dir / Path('config.ini')
     return cfg
+
+
+def get_data_dir(*,
+                 click_instance,
+                 app_name: str,
+                 verbose: bool,
+                 debug: bool,
+                 ):
+
+    cfg_dir = get_config_directory(click_instance=click_instance,
+                                   app_name=app_name,
+                                   verbose=verbose,
+                                   debug=debug,)
+
+    data_dir = cfg_dir / Path('data')
+    os.mkdirs(data_dir, exist_ok=True)
+
+    return data_dir
 
 
 def click_read_config(*,
