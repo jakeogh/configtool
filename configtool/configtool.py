@@ -45,25 +45,13 @@ from typing import Sequence
 from typing import Tuple
 
 #from with_chdir import chdir
+from asserttool import eprint
+from asserttool import ic
 from asserttool import nevd
 from asserttool import validate_slice
 from enumerate_input import enumerate_input
-from epochfilter import get_mtime
 from retry_on_exception import retry_on_exception
-
-
-def eprint(*args, **kwargs):
-    if 'file' in kwargs.keys():
-        kwargs.pop('file')
-    print(*args, file=sys.stderr, **kwargs)
-
-
-try:
-    from icecream import ic  # https://github.com/gruns/icecream
-    from icecream import icr  # https://github.com/jakeogh/icecream
-except ImportError:
-    ic = eprint
-    icr = eprint
+from timetool import get_mtime
 
 
 class ConfigUnchangedError(ValueError):
@@ -231,183 +219,21 @@ def _click_remove_config_entry(*,
                                              verbose=verbose,
                                              debug=debug,)
     return config, config_mtime
-# import pdb; pdb.set_trace()
-# #set_trace(term_size=(80, 24))
-# from pudb import set_trace; set_trace(paused=False)
-
-##def log_uncaught_exceptions(ex_cls, ex, tb):
-##   eprint(''.join(traceback.format_tb(tb)))
-##   eprint('{0}: {1}'.format(ex_cls, ex))
-##
-##sys.excepthook = log_uncaught_exceptions
-
-def get_timestamp():
-    timestamp = str("%.22f" % time.time())
-    return timestamp
 
 
-#@with_plugins(iter_entry_points('click_command_tree'))
-#@click.group()
-#@click.option('--verbose', is_flag=True)
-#@click.option('--debug', is_flag=True)
-#@click.pass_context
-#def cli(ctx,
-#        verbose: bool,
-#        debug: bool,
-#        ):
-#
-#    ctx.ensure_object(dict)
-#    ctx.obj['verbose'] = verbose
-#    ctx.obj['debug'] = debug
-
-
-
-
-# DONT CHANGE FUNC NAME
 @click.command()
-@click.argument("paths", type=str, nargs=-1)
-@click.argument("sysskel",
-                type=click.Path(exists=False,
-                                dir_okay=True,
-                                file_okay=False,
-                                path_type=str,
-                                allow_dash=False,),
-                nargs=1,
-                required=True,)
-@click.argument("slice_syntax", type=validate_slice, nargs=1)
-#@click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
-@click.option('--simulate', is_flag=True)
-@click.option('--ipython', is_flag=True)
-@click.option('--count', is_flag=True)
-@click.option('--skip', type=int, default=False)
-@click.option('--head', type=int, default=False)
-@click.option('--tail', type=int, default=False)
-@click.option("--printn", is_flag=True)
-#@click.option("--progress", is_flag=True)
 @click.pass_context
 def cli(ctx,
-        paths,
-        sysskel: str,
-        slice_syntax: str,
         verbose: bool,
         debug: bool,
-        simulate: bool,
-        ipython: bool,
-        count: bool,
-        skip: int,
-        head: int,
-        tail: int,
-        printn: bool,
         ):
 
     ctx.ensure_object(dict)
     null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=printn,
+                                     printn=False,
                                      ipython=False,
                                      verbose=verbose,
                                      debug=debug,)
-
-    #progress = False
-    #if (verbose or debug):
-    #    progress = False
-
-    #ctx.obj['end'] = end
-    #ctx.obj['null'] = null
-    #ctx.obj['progress'] = progress
-    ctx.obj['count'] = count
-    ctx.obj['skip'] = skip
-    ctx.obj['head'] = head
-    ctx.obj['tail'] = tail
-
-    #global APP_NAME
-    #config, config_mtime = click_read_config(click_instance=click,
-    #                                         app_name=APP_NAME,
-    #                                         verbose=verbose,
-    #                                         debug=debug,)
-    #if verbose:
-    #    ic(config, config_mtime)
-
-    #if add:
-    #    section = "test_section"
-    #    key = "test_key"
-    #    value = "test_value"
-    #    config, config_mtime = click_write_config_entry(click_instance=click,
-    #                                                    app_name=APP_NAME,
-    #                                                    section=section,
-    #                                                    key=key,
-    #                                                    value=value,
-    #                                                    verbose=verbose,
-    #                                                    debug=debug,)
-    #    if verbose:
-    #        ic(config)
-
-    iterator = paths
-
-    index = 0
-    for index, path in enumerate_input(iterator=iterator,
-                                       dont_decode=True,  # paths are bytes
-                                       null=null,
-                                       progress=False,
-                                       skip=skip,
-                                       head=head,
-                                       tail=tail,
-                                       debug=debug,
-                                       verbose=verbose,):
-        path = Path(os.fsdecode(path))
-
-        if verbose:  # or simulate:
-            ic(index, path)
-        #if count:
-        #    if count > (index + 1):
-        #        ic(count)
-        #        sys.exit(0)
-
-        #if simulate:
-        #    continue
-
-        with open(path, 'rb') as fh:
-            path_bytes_data = fh.read()
-
-        if not count:
-            print(path, end=end)
-
-    if count:
-        print(index + 1, end=end)
-
-#        if ipython:
-#            import IPython; IPython.embed()
-
-#@cli.command()
-#@click.argument("urls", type=str, nargs=-1)
-#@click.option('--verbose', is_flag=True)
-#@click.option('--debug', is_flag=True)
-#@click.pass_context
-#def some_command(ctx,
-#                 urls,
-#                 verbose: bool,
-#                 debug: bool,
-#                 ):
-#    if verbose:
-#        ctx.obj['verbose'] = verbose
-#    verbose = ctx.obj['verbose']
-#    if debug:
-#        ctx.obj['debug'] = debug
-#    debug = ctx.obj['debug']
-#
-#    iterator = urls
-#    for index, url in enumerate_input(iterator=iterator,
-#                                      null=ctx.obj['null'],
-#                                      progress=ctx.obj['progress'],
-#                                      skip=ctx.obj['skip'],
-#                                      head=ctx.obj['head'],
-#                                      tail=ctx.obj['tail'],
-#                                      debug=ctx.obj['debug'],
-#                                      verbose=ctx.obj['verbose'],):
-#
-#        if ctx.obj['verbose']:
-#            ic(index, url)
-
-
 
