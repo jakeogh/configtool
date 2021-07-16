@@ -224,12 +224,31 @@ def _click_remove_config_entry(*,
     return config, config_mtime
 
 
-@click.command()
-@click.option('--add', is_flag=True)
+@click.group()
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def cli(ctx,
+        verbose: bool,
+        debug: bool,
+        ):
+
+    ctx.ensure_object(dict)
+    null, end, verbose, debug = nevd(ctx=ctx,
+                                     printn=False,
+                                     ipython=False,
+                                     verbose=verbose,
+                                     debug=debug,)
+
+
+@cli.command()
+@click.argument('section')
+@click.argument('key')
+@click.argument('value')
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
+@click.pass_context
+def add(ctx,
         add: bool,
         verbose: bool,
         debug: bool,
