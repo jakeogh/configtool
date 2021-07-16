@@ -53,6 +53,9 @@ from enumerate_input import enumerate_input
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
 
+global APP_NAME
+APP_NAME = 'configtool'
+
 
 class ConfigUnchangedError(ValueError):
     pass
@@ -222,18 +225,43 @@ def _click_remove_config_entry(*,
 
 
 @click.command()
+@click.option('--add', is_flag=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def cli(ctx,
+        add: bool,
         verbose: bool,
         debug: bool,
         ):
 
-    ctx.ensure_object(dict)
     null, end, verbose, debug = nevd(ctx=ctx,
                                      printn=False,
                                      ipython=False,
                                      verbose=verbose,
                                      debug=debug,)
+    if verbose:
+        ic(dir(ctx))
+
+    global APP_NAME
+    config, config_mtime = click_read_config(click_instance=click,
+                                             app_name=APP_NAME,
+                                             verbose=verbose,
+                                             debug=debug,)
+    if verbose:
+        ic(config, config_mtime)
+
+    if add:
+        section = "test_section"
+        key = "test_key"
+        value = "test_value"
+        config, config_mtime = click_write_config_entry(click_instance=click,
+                                                        app_name=APP_NAME,
+                                                        section=section,
+                                                        key=key,
+                                                        value=value,
+                                                        verbose=verbose,
+                                                        debug=debug,)
+        if verbose:
+            ic(config)
 
