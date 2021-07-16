@@ -242,13 +242,16 @@ def cli(ctx,
 
 
 @cli.command()
-@click.argument('section')
-@click.argument('key')
-@click.argument('value')
+@click.argument('section', nargs=1)
+@click.argument('key', nargs=1)
+@click.argument('value', nargs=1, required=False)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def add(ctx,
+        section: str,
+        key: str,
+        value: Optional[str],
         add: bool,
         verbose: bool,
         debug: bool,
@@ -283,4 +286,32 @@ def add(ctx,
                                                         debug=debug,)
         if verbose:
             ic(config)
+
+
+@cli.command('list')
+@click.argument('section', required=False)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
+@click.pass_context
+def show(ctx,
+         section: Optional[str],
+         verbose: bool,
+         debug: bool,
+         ):
+
+    null, end, verbose, debug = nevd(ctx=ctx,
+                                     printn=False,
+                                     ipython=False,
+                                     verbose=verbose,
+                                     debug=debug,)
+    if verbose:
+        ic(dir(ctx))
+
+    global APP_NAME
+    config, config_mtime = click_read_config(click_instance=click,
+                                             app_name=APP_NAME,
+                                             verbose=verbose,
+                                             debug=debug,)
+    if verbose:
+        ic(config, config_mtime)
 
