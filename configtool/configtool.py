@@ -252,7 +252,6 @@ def add(ctx,
         section: str,
         key: str,
         value: Optional[str],
-        add: bool,
         verbose: bool,
         debug: bool,
         ):
@@ -273,19 +272,18 @@ def add(ctx,
     if verbose:
         ic(config, config_mtime)
 
-    if add:
-        section = "test_section"
-        key = "test_key"
-        value = "test_value"
-        config, config_mtime = click_write_config_entry(click_instance=click,
-                                                        app_name=APP_NAME,
-                                                        section=section,
-                                                        key=key,
-                                                        value=value,
-                                                        verbose=verbose,
-                                                        debug=debug,)
-        if verbose:
-            ic(config)
+    section = "test_section"
+    key = "test_key"
+    value = "test_value"
+    config, config_mtime = click_write_config_entry(click_instance=click,
+                                                    app_name=APP_NAME,
+                                                    section=section,
+                                                    key=key,
+                                                    value=value,
+                                                    verbose=verbose,
+                                                    debug=debug,)
+    if verbose:
+        ic(config)
 
 
 @cli.command('list')
