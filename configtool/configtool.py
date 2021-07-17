@@ -167,10 +167,16 @@ def click_write_config_entry(*,
                              ):
     if debug:
         ic(app_name, section, key, value)
+
+    assert isinstance(section, str)
+    assert isinstance(key, str)
+    assert isinstance(value, str)
     cfg = get_config_ini_path(click_instance=click_instance,
                               app_name=app_name,
                               verbose=verbose,
                               debug=debug,)
+    if debug:
+        ic(cfg)
 
     cfg.parent.mkdir(exist_ok=True)
     parser = configparser.RawConfigParser()
