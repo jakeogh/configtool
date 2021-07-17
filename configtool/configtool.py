@@ -207,18 +207,14 @@ def click_remove_config_entry(*,
                               value: str,
                               verbose: bool,
                               debug: bool,
-                              keep_case: bool = True,
                               ):
+
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), 'config.ini'))
     parser = configparser.RawConfigParser()
     parser.read([cfg])
-    if keep_case:
-        parser.optionxform = str
-    try:
-        parser[section][key] = value
-    except KeyError:
-        parser[section] = {}
-        parser[section][key] = value
+
+    assert parser[section][key] == value
+    del parser[section][key]
 
     with open(cfg, 'w') as configfile:
         parser.write(configfile)
