@@ -199,16 +199,16 @@ def click_write_config_entry(*,
     return config, config_mtime
 
 
-def _click_remove_config_entry(*,
-                               click_instance,
-                               app_name: str,
-                               section: str,
-                               key: str,
-                               value: str,
-                               verbose: bool,
-                               debug: bool,
-                               keep_case: bool = True,
-                               ):
+def click_remove_config_entry(*,
+                              click_instance,
+                              app_name: str,
+                              section: str,
+                              key: str,
+                              value: str,
+                              verbose: bool,
+                              debug: bool,
+                              keep_case: bool = True,
+                              ):
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), 'config.ini'))
     parser = configparser.RawConfigParser()
     parser.read([cfg])
