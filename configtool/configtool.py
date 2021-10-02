@@ -22,36 +22,37 @@
 # pylint: disable=C0305  # Trailing newlines editor should fix automatically, pointless warning
 
 import os
-import sys
-import time
+#import sys
+#import time
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
 
 import click
-import sh
+
+#import sh
 
 signal(SIGPIPE, SIG_DFL)
 import configparser
 import errno
-import os
 from pathlib import Path
-from typing import ByteString
-from typing import Generator
-from typing import Iterable
-from typing import List
+#from typing import ByteString
+#from typing import Generator
+#from typing import Iterable
+#from typing import List
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 
 #from with_chdir import chdir
 from asserttool import eprint
 from asserttool import ic
 from asserttool import nevd
 from asserttool import validate_slice
-from enumerate_input import enumerate_input
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
+
+#from typing import Sequence
+#from typing import Tuple
+
 
 global APP_NAME
 APP_NAME = 'configtool'
