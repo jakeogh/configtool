@@ -168,6 +168,32 @@ def click_read_config(*,
 
 @retry_on_exception(exception=OSError,
                     errno=errno.ENOSPC,)
+def write_config_entry(*,
+                       path: Path,
+                       section: str,
+                       key: str,
+                       value: str,
+                       verbose: bool,
+                       debug: bool,
+                       keep_case: bool = True,
+                       ):
+
+    parser = configparser.RawConfigParser()
+    if keep_case:
+        parser.optionxform = str
+    parser.read([path])
+    try:
+        parser[section][key] = value
+    except KeyError:
+        parser[section] = {}
+        parser[section][key] = value
+
+    with open(path, 'w') as fh:
+        parser.write(fh)
+
+
+@retry_on_exception(exception=OSError,
+                    errno=errno.ENOSPC,)
 def click_write_config_entry(*,
                              click_instance,
                              app_name: str,
@@ -192,18 +218,13 @@ def click_write_config_entry(*,
         ic(cfg)
 
     cfg.parent.mkdir(exist_ok=True)
-    parser = configparser.RawConfigParser()
-    if keep_case:
-        parser.optionxform = str
-    parser.read([cfg])
-    try:
-        parser[section][key] = value
-    except KeyError:
-        parser[section] = {}
-        parser[section][key] = value
-
-    with open(cfg, 'w') as configfile:
-        parser.write(configfile)
+    write_config_entry(path=cfg,
+                       section=section,
+                       key=key,
+                       keep_case=keep_case,
+                       value=value,
+                       verbose=verbose,
+                       debug=debug,)
 
     config, config_mtime = click_read_config(click_instance=click_instance,
                                              app_name=app_name,
