@@ -24,13 +24,12 @@
 import os
 #import sys
 #import time
+#import sh
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
 
 import click
-
-#import sh
 
 signal(SIGPIPE, SIG_DFL)
 import configparser
@@ -111,6 +110,30 @@ def get_data_dir(*,
     return data_dir
 
 
+def read_config(*,
+                path: Path,
+                keep_case: bool,
+                verbose: bool,
+                debug: bool,
+                ):
+
+    parser = configparser.RawConfigParser()
+    if keep_case:
+        parser.optionxform = str
+    parser.read([path])
+    rv = {}
+    if debug:
+        ic(parser.sections())
+    for section in parser.sections():
+        rv[section] = {}
+        for key, value in parser.items(section):
+            rv[section][key] = value
+    if debug:
+        ic(rv)
+
+    return rv
+
+
 def click_read_config(*,
                       click_instance,
                       app_name: str,
@@ -137,19 +160,8 @@ def click_read_config(*,
     cfg.parent.mkdir(exist_ok=True)
     if debug:
         ic(cfg)
-    parser = configparser.RawConfigParser()
-    if keep_case:
-        parser.optionxform = str
-    parser.read([cfg])
-    rv = {}
-    if debug:
-        ic(parser.sections())
-    for section in parser.sections():
-        rv[section] = {}
-        for key, value in parser.items(section):
-            rv[section][key] = value
-    if debug:
-        ic(rv)
+
+    rv = read_config(path=cfg, keep_case=keep_case, verbose=verbose, debug=debug)
 
     return rv, config_mtime
 
