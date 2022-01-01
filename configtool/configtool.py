@@ -22,9 +22,7 @@
 # pylint: disable=C0305  # Trailing newlines editor should fix automatically, pointless warning
 
 import os
-#import sys
-#import time
-#import sh
+from math import inf
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
@@ -35,23 +33,16 @@ signal(SIGPIPE, SIG_DFL)
 import configparser
 import errno
 from pathlib import Path
-#from typing import ByteString
-#from typing import Generator
-#from typing import Iterable
-#from typing import List
 from typing import Optional
 
-#from with_chdir import chdir
 from asserttool import eprint
 from asserttool import ic
-from asserttool import nevd
+from asserttool import tv
 from asserttool import validate_slice
+from clicktool import add_options
+from clicktool import click_global_options
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
-
-#from typing import Sequence
-#from typing import Tuple
-
 
 global APP_NAME
 APP_NAME = 'configtool'
@@ -64,8 +55,7 @@ class ConfigUnchangedError(ValueError):
 def get_config_directory(*,
                          click_instance,
                          app_name: str,
-                         verbose: bool,
-                         debug: bool,
+                         verbose: int,
                          ):
     if verbose:
         ic(click_instance, click_instance.get_app_dir(app_name))
@@ -79,14 +69,13 @@ def get_config_directory(*,
 def get_config_ini_path(*,
                         click_instance,
                         app_name: str,
-                        verbose: bool,
-                        debug: bool,
+                        verbose: int,
                         ):
 
     cfg_dir = get_config_directory(click_instance=click_instance,
                                    app_name=app_name,
                                    verbose=verbose,
-                                   debug=debug,)
+                                   )
 
     cfg = cfg_dir / Path('config.ini')
     return cfg
@@ -95,14 +84,13 @@ def get_config_ini_path(*,
 def get_data_dir(*,
                  click_instance,
                  app_name: str,
-                 verbose: bool,
-                 debug: bool,
+                 verbose: int,
                  ):
 
     cfg_dir = get_config_directory(click_instance=click_instance,
                                    app_name=app_name,
                                    verbose=verbose,
-                                   debug=debug,)
+                                   )
 
     data_dir = cfg_dir / Path('data')
     os.makedirs(data_dir, exist_ok=True)
@@ -113,8 +101,7 @@ def get_data_dir(*,
 def read_config(*,
                 path: Path,
                 keep_case: bool,
-                verbose: bool,
-                debug: bool,
+                verbose: int,
                 ):
 
     parser = configparser.RawConfigParser()
@@ -122,13 +109,13 @@ def read_config(*,
         parser.optionxform = str
     parser.read([path])
     rv = {}
-    if debug:
+    if verbose == inf:
         ic(parser.sections())
     for section in parser.sections():
         rv[section] = {}
         for key, value in parser.items(section):
             rv[section][key] = value
-    if debug:
+    if verbose == inf:
         ic(rv)
 
     return rv
@@ -137,8 +124,7 @@ def read_config(*,
 def click_read_config(*,
                       click_instance,
                       app_name: str,
-                      verbose: bool,
-                      debug: bool,
+                      verbose: int,
                       last_mtime=None,
                       keep_case: bool = True,
                       ):
@@ -146,7 +132,7 @@ def click_read_config(*,
     cfg = get_config_ini_path(click_instance=click_instance,
                               app_name=app_name,
                               verbose=verbose,
-                              debug=debug,)
+                              )
 
     try:
         config_mtime = get_mtime(cfg)
@@ -158,10 +144,10 @@ def click_read_config(*,
             raise ConfigUnchangedError
 
     cfg.parent.mkdir(exist_ok=True)
-    if debug:
+    if verbose == inf:
         ic(cfg)
 
-    rv = read_config(path=cfg, keep_case=keep_case, verbose=verbose, debug=debug)
+    rv = read_config(path=cfg, keep_case=keep_case, verbose=verbose)
 
     return rv, config_mtime
 
@@ -173,8 +159,7 @@ def write_config_entry(*,
                        section: str,
                        key: str,
                        value: str,
-                       verbose: bool,
-                       debug: bool,
+                       verbose: int,
                        keep_case: bool = True,
                        ):
 
@@ -200,11 +185,10 @@ def click_write_config_entry(*,
                              section: str,
                              key: str,
                              value: str,
-                             verbose: bool,
-                             debug: bool,
+                             verbose: int,
                              keep_case: bool = True,
                              ):
-    if debug:
+    if verbose == inf:
         ic(app_name, section, key, value)
 
     assert isinstance(section, str)
@@ -213,8 +197,8 @@ def click_write_config_entry(*,
     cfg = get_config_ini_path(click_instance=click_instance,
                               app_name=app_name,
                               verbose=verbose,
-                              debug=debug,)
-    if debug:
+                              )
+    if verbose == inf:
         ic(cfg)
 
     cfg.parent.mkdir(exist_ok=True)
@@ -224,12 +208,12 @@ def click_write_config_entry(*,
                        keep_case=keep_case,
                        value=value,
                        verbose=verbose,
-                       debug=debug,)
+                       )
 
     config, config_mtime = click_read_config(click_instance=click_instance,
                                              app_name=app_name,
                                              verbose=verbose,
-                                             debug=debug,)
+                                             )
     return config, config_mtime
 
 
@@ -239,8 +223,7 @@ def click_remove_config_entry(*,
                               section: str,
                               key: str,
                               value: str,
-                              verbose: bool,
-                              debug: bool,
+                              verbose: int,
                               ):
 
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), 'config.ini'))
@@ -256,47 +239,43 @@ def click_remove_config_entry(*,
     config, config_mtime = click_read_config(click_instance=click_instance,
                                              app_name=app_name,
                                              verbose=verbose,
-                                             debug=debug,)
+                                             )
     return config, config_mtime
 
 
 @click.group()
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        verbose: bool,
-        debug: bool,
+        verbose: int,
+        verbose_inf: bool,
         ):
 
     ctx.ensure_object(dict)
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     debug=debug,)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
 
 
 @cli.command()
 @click.argument('section', nargs=1)
 @click.argument('key', nargs=1)
 @click.argument('value', nargs=1, required=False)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@add_options(click_global_options)
 @click.pass_context
 def add(ctx,
         section: str,
         key: str,
         value: Optional[str],
-        verbose: bool,
-        debug: bool,
+        verbose: int,
+        verbose_inf: bool,
         ):
 
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     debug=debug,)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
     if verbose:
         ic(dir(ctx))
 
@@ -304,7 +283,7 @@ def add(ctx,
     config, config_mtime = click_read_config(click_instance=click,
                                              app_name=APP_NAME,
                                              verbose=verbose,
-                                             debug=debug,)
+                                             )
     if verbose:
         ic(config, config_mtime)
 
@@ -317,27 +296,25 @@ def add(ctx,
                                                     key=key,
                                                     value=value,
                                                     verbose=verbose,
-                                                    debug=debug,)
+                                                    )
     if verbose:
         ic(config)
 
 
 @cli.command('list')
 @click.argument('section', required=False)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@add_options(click_global_options)
 @click.pass_context
 def show(ctx,
          section: Optional[str],
-         verbose: bool,
-         debug: bool,
+         verbose: int,
+         verbose_inf: bool,
          ):
 
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     debug=debug,)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
     if verbose:
         ic(dir(ctx))
 
@@ -345,7 +322,7 @@ def show(ctx,
     config, config_mtime = click_read_config(click_instance=click,
                                              app_name=APP_NAME,
                                              verbose=verbose,
-                                             debug=debug,)
+                                             )
     if verbose:
         ic(config, config_mtime)
 
