@@ -39,7 +39,7 @@ from asserttool import eprint
 from asserttool import ic
 from asserttool import tv
 from asserttool import validate_slice
-from clicktool import add_options
+from clicktool import click_add_options
 from clicktool import click_global_options
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
@@ -244,7 +244,7 @@ def click_remove_config_entry(*,
 
 
 @click.group()
-@add_options(click_global_options)
+@click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
         verbose: int,
@@ -262,7 +262,7 @@ def cli(ctx,
 @click.argument('section', nargs=1)
 @click.argument('key', nargs=1)
 @click.argument('value', nargs=1, required=False)
-@add_options(click_global_options)
+@click_add_options(click_global_options)
 @click.pass_context
 def add(ctx,
         section: str,
@@ -303,7 +303,7 @@ def add(ctx,
 
 @cli.command('list')
 @click.argument('section', required=False)
-@add_options(click_global_options)
+@click_add_options(click_global_options)
 @click.pass_context
 def show(ctx,
          section: Optional[str],
