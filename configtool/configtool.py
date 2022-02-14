@@ -35,12 +35,12 @@ import errno
 from pathlib import Path
 from typing import Optional
 
-from asserttool import eprint
 from asserttool import ic
-from asserttool import tv
 from asserttool import validate_slice
 from clicktool import click_add_options
 from clicktool import click_global_options
+from clicktool import tv
+from eprint import eprint
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
 
@@ -161,7 +161,7 @@ def write_config_entry(*,
                        value: str,
                        verbose: int,
                        keep_case: bool = True,
-                       ):
+                       ) -> None:
 
     parser = configparser.RawConfigParser()
     if keep_case:
