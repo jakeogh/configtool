@@ -21,20 +21,18 @@
 # pylint: disable=R0916  # Too many boolean expressions in if statement
 # pylint: disable=C0305  # Trailing newlines editor should fix automatically, pointless warning
 
+import configparser
+import errno
 import os
 from math import inf
+from pathlib import Path
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
+from typing import Optional
+from typing import Union
 
 import click
-
-signal(SIGPIPE, SIG_DFL)
-import configparser
-import errno
-from pathlib import Path
-from typing import Optional
-
 from asserttool import ic
 from asserttool import validate_slice
 from clicktool import click_add_options
@@ -44,6 +42,7 @@ from eprint import eprint
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
 
+signal(SIGPIPE, SIG_DFL)
 global APP_NAME
 APP_NAME = 'configtool'
 
@@ -55,7 +54,7 @@ class ConfigUnchangedError(ValueError):
 def get_config_directory(*,
                          click_instance,
                          app_name: str,
-                         verbose: int,
+                         verbose: Union[bool, int, float],
                          ):
     if verbose:
         ic(click_instance, click_instance.get_app_dir(app_name))
@@ -69,7 +68,7 @@ def get_config_directory(*,
 def get_config_ini_path(*,
                         click_instance,
                         app_name: str,
-                        verbose: int,
+                        verbose: Union[bool, int, float],
                         ):
 
     cfg_dir = get_config_directory(click_instance=click_instance,
@@ -84,7 +83,7 @@ def get_config_ini_path(*,
 def get_data_dir(*,
                  click_instance,
                  app_name: str,
-                 verbose: int,
+                 verbose: Union[bool, int, float],
                  ):
 
     cfg_dir = get_config_directory(click_instance=click_instance,
@@ -101,7 +100,7 @@ def get_data_dir(*,
 def read_config(*,
                 path: Path,
                 keep_case: bool,
-                verbose: int,
+                verbose: Union[bool, int, float],
                 ):
 
     parser = configparser.RawConfigParser()
@@ -124,7 +123,7 @@ def read_config(*,
 def click_read_config(*,
                       click_instance,
                       app_name: str,
-                      verbose: int,
+                      verbose: Union[bool, int, float],
                       last_mtime=None,
                       keep_case: bool = True,
                       ):
@@ -159,7 +158,7 @@ def write_config_entry(*,
                        section: str,
                        key: str,
                        value: str,
-                       verbose: int,
+                       verbose: Union[bool, int, float],
                        keep_case: bool = True,
                        ) -> None:
 
@@ -185,7 +184,7 @@ def click_write_config_entry(*,
                              section: str,
                              key: str,
                              value: str,
-                             verbose: int,
+                             verbose: Union[bool, int, float],
                              keep_case: bool = True,
                              ):
     if verbose == inf:
@@ -223,7 +222,7 @@ def click_remove_config_entry(*,
                               section: str,
                               key: str,
                               value: str,
-                              verbose: int,
+                              verbose: Union[bool, int, float],
                               ):
 
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), 'config.ini'))
@@ -243,11 +242,11 @@ def click_remove_config_entry(*,
     return config, config_mtime
 
 
-@click.group()
+@click.group(no_args_is_help=True)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        verbose: int,
+        verbose: Union[bool, int, float],
         verbose_inf: bool,
         ):
 
@@ -268,7 +267,7 @@ def add(ctx,
         section: str,
         key: str,
         value: Optional[str],
-        verbose: int,
+        verbose: Union[bool, int, float],
         verbose_inf: bool,
         ):
 
@@ -307,7 +306,7 @@ def add(ctx,
 @click.pass_context
 def show(ctx,
          section: Optional[str],
-         verbose: int,
+         verbose: Union[bool, int, float],
          verbose_inf: bool,
          ):
 
