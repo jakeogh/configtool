@@ -200,17 +200,19 @@ def click_write_config_entry(
     click_instance,
     app_name: str,
     section: str,
-    key: str,
-    value: str,
     verbose: Union[bool, int, float],
     keep_case: bool = True,
+    key: Optional[str] = None,
+    value: Optional[str] = None,
 ):
     if verbose == inf:
         ic(app_name, section, key, value)
 
     assert isinstance(section, str)
-    assert isinstance(key, str)
-    assert isinstance(value, str)
+    if key:
+        assert isinstance(key, str)
+    if value:
+        assert isinstance(value, str)
     cfg = get_config_ini_path(
         click_instance=click_instance,
         app_name=app_name,
