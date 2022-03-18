@@ -177,6 +177,11 @@ def write_config_entry(
     if keep_case:
         parser.optionxform = str
 
+    if value:
+        assert isinstance(value, str)
+        assert len(value) > 0
+        assert value != " "
+
     parser.read([path])
     if key:
         try:
@@ -213,6 +218,8 @@ def click_write_config_entry(
         assert isinstance(key, str)
     if value:
         assert isinstance(value, str)
+        assert len(value) > 0
+        assert value != " "
     cfg = get_config_ini_path(
         click_instance=click_instance,
         app_name=app_name,
