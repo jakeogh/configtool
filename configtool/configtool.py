@@ -181,6 +181,8 @@ def write_config_entry(
         assert isinstance(value, str)
         assert len(value) > 0
         assert value != " "
+    else:
+        value = "None"
 
     parser.read([path])
     if key:
@@ -220,6 +222,7 @@ def click_write_config_entry(
         assert isinstance(value, str)
         assert len(value) > 0
         assert value != " "
+        assert value != ""
     cfg = get_config_ini_path(
         click_instance=click_instance,
         app_name=app_name,
