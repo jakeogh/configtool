@@ -167,21 +167,25 @@ def write_config_entry(
     *,
     path: Path,
     section: str,
-    key: str,
-    value: str,
     verbose: Union[bool, int, float],
     keep_case: bool = True,
+    key: Optional[str] = None,
+    value: Optional[str] = None,
 ) -> None:
 
     parser = configparser.RawConfigParser(delimiters=("\t",))
     if keep_case:
         parser.optionxform = str
+
     parser.read([path])
-    try:
-        parser[section][key] = value
-    except KeyError:
+    if key:
+        try:
+            parser[section][key] = value
+        except KeyError:
+            parser[section] = {}
+            parser[section][key] = value
+    else:
         parser[section] = {}
-        parser[section][key] = value
 
     with open(path, "w") as fh:
         parser.write(fh)
