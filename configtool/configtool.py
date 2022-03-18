@@ -44,18 +44,19 @@ from timetool import get_mtime
 
 signal(SIGPIPE, SIG_DFL)
 global APP_NAME
-APP_NAME = 'configtool'
+APP_NAME = "configtool"
 
 
 class ConfigUnchangedError(ValueError):
     pass
 
 
-def get_config_directory(*,
-                         click_instance,
-                         app_name: str,
-                         verbose: Union[bool, int, float],
-                         ):
+def get_config_directory(
+    *,
+    click_instance,
+    app_name: str,
+    verbose: Union[bool, int, float],
+):
     if verbose:
         ic(click_instance, click_instance.get_app_dir(app_name))
     assert len(app_name) > 0
@@ -65,45 +66,50 @@ def get_config_directory(*,
     return result
 
 
-def get_config_ini_path(*,
-                        click_instance,
-                        app_name: str,
-                        verbose: Union[bool, int, float],
-                        ):
+def get_config_ini_path(
+    *,
+    click_instance,
+    app_name: str,
+    verbose: Union[bool, int, float],
+):
 
-    cfg_dir = get_config_directory(click_instance=click_instance,
-                                   app_name=app_name,
-                                   verbose=verbose,
-                                   )
+    cfg_dir = get_config_directory(
+        click_instance=click_instance,
+        app_name=app_name,
+        verbose=verbose,
+    )
 
-    cfg = cfg_dir / Path('config.ini')
+    cfg = cfg_dir / Path("config.ini")
     return cfg
 
 
-def get_data_dir(*,
-                 click_instance,
-                 app_name: str,
-                 verbose: Union[bool, int, float],
-                 ):
+def get_data_dir(
+    *,
+    click_instance,
+    app_name: str,
+    verbose: Union[bool, int, float],
+):
 
-    cfg_dir = get_config_directory(click_instance=click_instance,
-                                   app_name=app_name,
-                                   verbose=verbose,
-                                   )
+    cfg_dir = get_config_directory(
+        click_instance=click_instance,
+        app_name=app_name,
+        verbose=verbose,
+    )
 
-    data_dir = cfg_dir / Path('data')
+    data_dir = cfg_dir / Path("data")
     os.makedirs(data_dir, exist_ok=True)
 
     return data_dir
 
 
-def read_config(*,
-                path: Path,
-                keep_case: bool,
-                verbose: Union[bool, int, float],
-                ):
+def read_config(
+    *,
+    path: Path,
+    keep_case: bool,
+    verbose: Union[bool, int, float],
+):
 
-    parser = configparser.RawConfigParser()
+    parser = configparser.RawConfigParser(delimiters=("\t",))
     if keep_case:
         parser.optionxform = str
     parser.read([path])
@@ -120,18 +126,20 @@ def read_config(*,
     return rv
 
 
-def click_read_config(*,
-                      click_instance,
-                      app_name: str,
-                      verbose: Union[bool, int, float],
-                      last_mtime=None,
-                      keep_case: bool = True,
-                      ):
+def click_read_config(
+    *,
+    click_instance,
+    app_name: str,
+    verbose: Union[bool, int, float],
+    last_mtime=None,
+    keep_case: bool = True,
+):
 
-    cfg = get_config_ini_path(click_instance=click_instance,
-                              app_name=app_name,
-                              verbose=verbose,
-                              )
+    cfg = get_config_ini_path(
+        click_instance=click_instance,
+        app_name=app_name,
+        verbose=verbose,
+    )
 
     try:
         config_mtime = get_mtime(cfg)
@@ -151,18 +159,21 @@ def click_read_config(*,
     return rv, config_mtime
 
 
-@retry_on_exception(exception=OSError,
-                    errno=errno.ENOSPC,)
-def write_config_entry(*,
-                       path: Path,
-                       section: str,
-                       key: str,
-                       value: str,
-                       verbose: Union[bool, int, float],
-                       keep_case: bool = True,
-                       ) -> None:
+@retry_on_exception(
+    exception=OSError,
+    errno=errno.ENOSPC,
+)
+def write_config_entry(
+    *,
+    path: Path,
+    section: str,
+    key: str,
+    value: str,
+    verbose: Union[bool, int, float],
+    keep_case: bool = True,
+) -> None:
 
-    parser = configparser.RawConfigParser()
+    parser = configparser.RawConfigParser(delimiters=("\t",))
     if keep_case:
         parser.optionxform = str
     parser.read([path])
@@ -172,156 +183,172 @@ def write_config_entry(*,
         parser[section] = {}
         parser[section][key] = value
 
-    with open(path, 'w') as fh:
+    with open(path, "w") as fh:
         parser.write(fh)
 
 
-@retry_on_exception(exception=OSError,
-                    errno=errno.ENOSPC,)
-def click_write_config_entry(*,
-                             click_instance,
-                             app_name: str,
-                             section: str,
-                             key: str,
-                             value: str,
-                             verbose: Union[bool, int, float],
-                             keep_case: bool = True,
-                             ):
+@retry_on_exception(
+    exception=OSError,
+    errno=errno.ENOSPC,
+)
+def click_write_config_entry(
+    *,
+    click_instance,
+    app_name: str,
+    section: str,
+    key: str,
+    value: str,
+    verbose: Union[bool, int, float],
+    keep_case: bool = True,
+):
     if verbose == inf:
         ic(app_name, section, key, value)
 
     assert isinstance(section, str)
     assert isinstance(key, str)
     assert isinstance(value, str)
-    cfg = get_config_ini_path(click_instance=click_instance,
-                              app_name=app_name,
-                              verbose=verbose,
-                              )
+    cfg = get_config_ini_path(
+        click_instance=click_instance,
+        app_name=app_name,
+        verbose=verbose,
+    )
     if verbose == inf:
         ic(cfg)
 
     cfg.parent.mkdir(exist_ok=True)
-    write_config_entry(path=cfg,
-                       section=section,
-                       key=key,
-                       keep_case=keep_case,
-                       value=value,
-                       verbose=verbose,
-                       )
+    write_config_entry(
+        path=cfg,
+        section=section,
+        key=key,
+        keep_case=keep_case,
+        value=value,
+        verbose=verbose,
+    )
 
-    config, config_mtime = click_read_config(click_instance=click_instance,
-                                             app_name=app_name,
-                                             verbose=verbose,
-                                             )
+    config, config_mtime = click_read_config(
+        click_instance=click_instance,
+        app_name=app_name,
+        verbose=verbose,
+    )
     return config, config_mtime
 
 
-def click_remove_config_entry(*,
-                              click_instance,
-                              app_name: str,
-                              section: str,
-                              key: str,
-                              value: str,
-                              verbose: Union[bool, int, float],
-                              ):
+def click_remove_config_entry(
+    *,
+    click_instance,
+    app_name: str,
+    section: str,
+    key: str,
+    value: str,
+    verbose: Union[bool, int, float],
+):
 
-    cfg = Path(os.path.join(click_instance.get_app_dir(app_name), 'config.ini'))
+    cfg = Path(os.path.join(click_instance.get_app_dir(app_name), "config.ini"))
     parser = configparser.RawConfigParser()
     parser.read([cfg])
 
     assert parser[section][key] == value
     del parser[section][key]
 
-    with open(cfg, 'w') as configfile:
+    with open(cfg, "w") as configfile:
         parser.write(configfile)
 
-    config, config_mtime = click_read_config(click_instance=click_instance,
-                                             app_name=app_name,
-                                             verbose=verbose,
-                                             )
+    config, config_mtime = click_read_config(
+        click_instance=click_instance,
+        app_name=app_name,
+        verbose=verbose,
+    )
     return config, config_mtime
 
 
 @click.group(no_args_is_help=True)
 @click_add_options(click_global_options)
 @click.pass_context
-def cli(ctx,
-        verbose: Union[bool, int, float],
-        verbose_inf: bool,
-        ):
+def cli(
+    ctx,
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+):
 
     ctx.ensure_object(dict)
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
 
 
 @cli.command()
-@click.argument('section', nargs=1)
-@click.argument('key', nargs=1)
-@click.argument('value', nargs=1, required=False)
+@click.argument("section", nargs=1)
+@click.argument("key", nargs=1)
+@click.argument("value", nargs=1, required=False)
 @click_add_options(click_global_options)
 @click.pass_context
-def add(ctx,
-        section: str,
-        key: str,
-        value: Optional[str],
-        verbose: Union[bool, int, float],
-        verbose_inf: bool,
-        ):
+def add(
+    ctx,
+    section: str,
+    key: str,
+    value: Optional[str],
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
     if verbose:
         ic(dir(ctx))
 
     global APP_NAME
-    config, config_mtime = click_read_config(click_instance=click,
-                                             app_name=APP_NAME,
-                                             verbose=verbose,
-                                             )
+    config, config_mtime = click_read_config(
+        click_instance=click,
+        app_name=APP_NAME,
+        verbose=verbose,
+    )
     if verbose:
         ic(config, config_mtime)
 
     section = "test_section"
     key = "test_key"
     value = "test_value"
-    config, config_mtime = click_write_config_entry(click_instance=click,
-                                                    app_name=APP_NAME,
-                                                    section=section,
-                                                    key=key,
-                                                    value=value,
-                                                    verbose=verbose,
-                                                    )
+    config, config_mtime = click_write_config_entry(
+        click_instance=click,
+        app_name=APP_NAME,
+        section=section,
+        key=key,
+        value=value,
+        verbose=verbose,
+    )
     if verbose:
         ic(config)
 
 
-@cli.command('list')
-@click.argument('section', required=False)
+@cli.command("list")
+@click.argument("section", required=False)
 @click_add_options(click_global_options)
 @click.pass_context
-def show(ctx,
-         section: Optional[str],
-         verbose: Union[bool, int, float],
-         verbose_inf: bool,
-         ):
+def show(
+    ctx,
+    section: Optional[str],
+    verbose: Union[bool, int, float],
+    verbose_inf: bool,
+):
 
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
+    tty, verbose = tv(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+    )
     if verbose:
         ic(dir(ctx))
 
     global APP_NAME
-    config, config_mtime = click_read_config(click_instance=click,
-                                             app_name=APP_NAME,
-                                             verbose=verbose,
-                                             )
+    config, config_mtime = click_read_config(
+        click_instance=click,
+        app_name=APP_NAME,
+        verbose=verbose,
+    )
     if verbose:
         ic(config, config_mtime)
-
