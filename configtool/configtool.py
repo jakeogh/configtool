@@ -43,6 +43,7 @@ from retry_on_exception import retry_on_exception
 from timetool import get_mtime
 
 signal(SIGPIPE, SIG_DFL)
+
 global APP_NAME
 APP_NAME = "configtool"
 
@@ -257,6 +258,7 @@ def click_remove_config_entry(
     key: str,
     value: str,
     verbose: Union[bool, int, float],
+    dict_input: bool,
 ):
 
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), "config.ini"))
@@ -266,7 +268,7 @@ def click_remove_config_entry(
     assert parser[section][key] == value
     del parser[section][key]
 
-    with open(cfg, "w") as configfile:
+    with open(cfg, "w", encoding="utf8") as configfile:
         parser.write(configfile)
 
     config, config_mtime = click_read_config(
@@ -284,6 +286,7 @@ def cli(
     ctx,
     verbose: Union[bool, int, float],
     verbose_inf: bool,
+    dict_input: bool,
 ):
 
     ctx.ensure_object(dict)
@@ -307,6 +310,7 @@ def add(
     value: Optional[str],
     verbose: Union[bool, int, float],
     verbose_inf: bool,
+    dict_input: bool,
 ):
 
     tty, verbose = tv(
@@ -350,6 +354,7 @@ def show(
     section: Optional[str],
     verbose: Union[bool, int, float],
     verbose_inf: bool,
+    dict_input: bool,
 ):
 
     tty, verbose = tv(
