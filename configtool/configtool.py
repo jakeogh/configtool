@@ -258,7 +258,6 @@ def click_remove_config_entry(
     key: str,
     value: str,
     verbose: Union[bool, int, float],
-    dict_input: bool,
 ):
 
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), "config.ini"))
