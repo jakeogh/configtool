@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
-# flake8: noqa           # flake8 has no per file settings :(
-# pylint: disable=C0111  # docstrings are always outdated and wrong
+
+# pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
 # pylint: disable=C0114  #      Missing module docstring (missing-module-docstring)
-# pylint: disable=W0511  # todo is encouraged
-# pylint: disable=C0301  # line too long
-# pylint: disable=R0902  # too many instance attributes
-# pylint: disable=C0302  # too many lines in module
-# pylint: disable=C0103  # single letter var names, func name too descriptive
-# pylint: disable=R0911  # too many return statements
-# pylint: disable=R0912  # too many branches
-# pylint: disable=R0915  # too many statements
-# pylint: disable=R0913  # too many arguments
-# pylint: disable=R1702  # too many nested blocks
-# pylint: disable=R0914  # too many local variables
-# pylint: disable=R0903  # too few public methods
-# pylint: disable=E1101  # no member for base
-# pylint: disable=W0201  # attribute defined outside __init__
-# pylint: disable=R0916  # Too many boolean expressions in if statement
-# pylint: disable=C0305  # Trailing newlines editor should fix automatically, pointless warning
+# pylint: disable=fixme                           # [W0511] todo is encouraged
+# pylint: disable=line-too-long                   # [C0301]
+# pylint: disable=too-many-instance-attributes    # [R0902]
+# pylint: disable=too-many-lines                  # [C0302] too many lines in module
+# pylint: disable=invalid-name                    # [C0103] single letter var names, name too descriptive
+# pylint: disable=too-many-return-statements      # [R0911]
+# pylint: disable=too-many-branches               # [R0912]
+# pylint: disable=too-many-statements             # [R0915]
+# pylint: disable=too-many-arguments              # [R0913]
+# pylint: disable=too-many-nested-blocks          # [R1702]
+# pylint: disable=too-many-locals                 # [R0914]
+# pylint: disable=too-few-public-methods          # [R0903]
+# pylint: disable=no-member                       # [E1101] no member for base
+# pylint: disable=attribute-defined-outside-init  # [W0201]
+# pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
+from __future__ import annotations
 
 import configparser
 import errno
@@ -29,16 +29,13 @@ from pathlib import Path
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
-from typing import Optional
-from typing import Union
 
 import click
 from asserttool import ic
-from asserttool import validate_slice
+from click_auto_help import AHGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tv
-from eprint import eprint
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
 
@@ -56,7 +53,7 @@ def get_config_directory(
     *,
     click_instance,
     app_name: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
     if verbose:
         ic(click_instance, click_instance.get_app_dir(app_name))
@@ -71,7 +68,7 @@ def get_config_ini_path(
     *,
     click_instance,
     app_name: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
 
     cfg_dir = get_config_directory(
@@ -88,7 +85,7 @@ def get_data_dir(
     *,
     click_instance,
     app_name: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
 
     cfg_dir = get_config_directory(
@@ -107,7 +104,7 @@ def read_config(
     *,
     path: Path,
     keep_case: bool,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
 
     parser = configparser.RawConfigParser(delimiters=("\t",))
@@ -131,7 +128,7 @@ def click_read_config(
     *,
     click_instance,
     app_name: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     last_mtime=None,
     keep_case: bool = True,
 ):
@@ -168,10 +165,10 @@ def write_config_entry(
     *,
     path: Path,
     section: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     keep_case: bool = True,
-    key: Optional[str] = None,
-    value: Optional[str] = None,
+    key: None | str = None,
+    value: None | str = None,
 ) -> None:
 
     parser = configparser.RawConfigParser(delimiters=("\t",))
@@ -208,10 +205,10 @@ def click_write_config_entry(
     click_instance,
     app_name: str,
     section: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     keep_case: bool = True,
-    key: Optional[str] = None,
-    value: Optional[str] = None,
+    key: None | str = None,
+    value: None | str = None,
 ):
     if verbose == inf:
         ic(app_name, section, key, value)
@@ -257,7 +254,7 @@ def click_remove_config_entry(
     section: str,
     key: str,
     value: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
 
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), "config.ini"))
@@ -278,14 +275,14 @@ def click_remove_config_entry(
     return config, config_mtime
 
 
-@click.group(no_args_is_help=True)
+@click.group(no_args_is_help=True, cls=AHGroup)
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(
     ctx,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     ctx.ensure_object(dict)
@@ -306,10 +303,10 @@ def add(
     ctx,
     section: str,
     key: str,
-    value: Optional[str],
-    verbose: Union[bool, int, float],
+    value: None | str,
+    verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -350,10 +347,10 @@ def add(
 @click.pass_context
 def show(
     ctx,
-    section: Optional[str],
-    verbose: Union[bool, int, float],
+    section: None | str,
+    verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
