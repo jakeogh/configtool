@@ -53,7 +53,7 @@ def get_config_directory(
     *,
     click_instance,
     app_name: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
     if verbose:
         ic(click_instance, click_instance.get_app_dir(app_name))
@@ -68,7 +68,7 @@ def get_config_ini_path(
     *,
     click_instance,
     app_name: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
 
     cfg_dir = get_config_directory(
@@ -85,7 +85,7 @@ def get_data_dir(
     *,
     click_instance,
     app_name: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
 
     cfg_dir = get_config_directory(
@@ -104,7 +104,7 @@ def read_config(
     *,
     path: Path,
     keep_case: bool,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
 
     parser = configparser.RawConfigParser(delimiters=("\t",))
@@ -128,9 +128,9 @@ def click_read_config(
     *,
     click_instance,
     app_name: str,
-    verbose: bool | int | float,
     last_mtime=None,
     keep_case: bool = True,
+    verbose: bool | int | float = False,
 ):
 
     cfg = get_config_ini_path(
@@ -165,10 +165,10 @@ def write_config_entry(
     *,
     path: Path,
     section: str,
-    verbose: bool | int | float,
     keep_case: bool = True,
     key: None | str = None,
     value: None | str = None,
+    verbose: bool | int | float = False,
 ) -> None:
 
     parser = configparser.RawConfigParser(delimiters=("\t",))
@@ -205,10 +205,10 @@ def click_write_config_entry(
     click_instance,
     app_name: str,
     section: str,
-    verbose: bool | int | float,
     keep_case: bool = True,
     key: None | str = None,
     value: None | str = None,
+    verbose: bool | int | float = False,
 ):
     if verbose == inf:
         ic(app_name, section, key, value)
@@ -254,7 +254,7 @@ def click_remove_config_entry(
     section: str,
     key: str,
     value: str,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
 
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), "config.ini"))
@@ -280,9 +280,9 @@ def click_remove_config_entry(
 @click.pass_context
 def cli(
     ctx,
-    verbose: bool | int | float,
     verbose_inf: bool,
     dict_output: bool,
+    verbose: bool | int | float = False,
 ):
 
     ctx.ensure_object(dict)
@@ -304,9 +304,9 @@ def add(
     section: str,
     key: str,
     value: None | str,
-    verbose: bool | int | float,
     verbose_inf: bool,
     dict_output: bool,
+    verbose: bool | int | float = False,
 ):
 
     tty, verbose = tv(
@@ -348,9 +348,9 @@ def add(
 def show(
     ctx,
     section: None | str,
-    verbose: bool | int | float,
     verbose_inf: bool,
     dict_output: bool,
+    verbose: bool | int | float = False,
 ):
 
     tty, verbose = tv(
