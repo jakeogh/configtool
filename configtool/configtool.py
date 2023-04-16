@@ -70,7 +70,6 @@ def get_config_ini_path(
     app_name: str,
     verbose: bool | int | float = False,
 ):
-
     cfg_dir = get_config_directory(
         click_instance=click_instance,
         app_name=app_name,
@@ -87,7 +86,6 @@ def get_data_dir(
     app_name: str,
     verbose: bool | int | float = False,
 ):
-
     cfg_dir = get_config_directory(
         click_instance=click_instance,
         app_name=app_name,
@@ -106,7 +104,6 @@ def read_config(
     keep_case: bool,
     verbose: bool | int | float = False,
 ):
-
     parser = configparser.RawConfigParser(delimiters=("\t",))
     if keep_case:
         parser.optionxform = str
@@ -132,7 +129,6 @@ def click_read_config(
     keep_case: bool = True,
     verbose: bool | int | float = False,
 ):
-
     cfg = get_config_ini_path(
         click_instance=click_instance,
         app_name=app_name,
@@ -170,7 +166,6 @@ def write_config_entry(
     value: None | str = None,
     verbose: bool | int | float = False,
 ) -> None:
-
     parser = configparser.RawConfigParser(delimiters=("\t",))
     if keep_case:
         parser.optionxform = str
@@ -256,7 +251,6 @@ def click_remove_config_entry(
     value: str,
     verbose: bool | int | float = False,
 ):
-
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), "config.ini"))
     parser = configparser.RawConfigParser()
     parser.read([cfg])
@@ -284,7 +278,6 @@ def cli(
     dict_output: bool,
     verbose: bool | int | float = False,
 ):
-
     ctx.ensure_object(dict)
     tty, verbose = tv(
         ctx=ctx,
@@ -308,7 +301,6 @@ def add(
     dict_output: bool,
     verbose: bool | int | float = False,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -352,7 +344,6 @@ def show(
     dict_output: bool,
     verbose: bool | int | float = False,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
