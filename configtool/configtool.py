@@ -19,6 +19,7 @@
 # pylint: disable=no-member                       # [E1101] no member for base
 # pylint: disable=attribute-defined-outside-init  # [W0201]
 # pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
+
 from __future__ import annotations
 
 import configparser
@@ -36,6 +37,7 @@ from click_auto_help import AHGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tv
+from globalverbose import gvd
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
 
@@ -55,12 +57,10 @@ def get_config_directory(
     app_name: str,
     verbose: bool | int | float = False,
 ):
-    if verbose:
-        ic(click_instance, click_instance.get_app_dir(app_name))
+    ic(click_instance, click_instance.get_app_dir(app_name))
     assert len(app_name) > 0
     result = Path(click_instance.get_app_dir(app_name))
-    if verbose:
-        ic(result)
+    ic(result)
     return result
 
 
@@ -73,7 +73,6 @@ def get_config_ini_path(
     cfg_dir = get_config_directory(
         click_instance=click_instance,
         app_name=app_name,
-        verbose=verbose,
     )
 
     cfg = cfg_dir / Path("config.ini")
@@ -89,7 +88,6 @@ def get_data_dir(
     cfg_dir = get_config_directory(
         click_instance=click_instance,
         app_name=app_name,
-        verbose=verbose,
     )
 
     data_dir = cfg_dir / Path("data")
@@ -109,13 +107,13 @@ def read_config(
         parser.optionxform = str
     parser.read([path])
     rv = {}
-    if verbose == inf:
+    if gvd:
         ic(parser.sections())
     for section in parser.sections():
         rv[section] = {}
         for key, value in parser.items(section):
             rv[section][key] = value
-    if verbose == inf:
+    if gvd:
         ic(rv)
 
     return rv
@@ -132,7 +130,6 @@ def click_read_config(
     cfg = get_config_ini_path(
         click_instance=click_instance,
         app_name=app_name,
-        verbose=verbose,
     )
 
     try:
@@ -145,10 +142,10 @@ def click_read_config(
             raise ConfigUnchangedError
 
     cfg.parent.mkdir(exist_ok=True)
-    if verbose == inf:
+    if gvd:
         ic(cfg)
 
-    rv = read_config(path=cfg, keep_case=keep_case, verbose=verbose)
+    rv = read_config(path=cfg, keep_case=keep_case)
 
     return rv, config_mtime
 
@@ -205,7 +202,7 @@ def click_write_config_entry(
     value: None | str = None,
     verbose: bool | int | float = False,
 ):
-    if verbose == inf:
+    if gvd:
         ic(app_name, section, key, value)
 
     assert isinstance(section, str)
@@ -219,9 +216,8 @@ def click_write_config_entry(
     cfg = get_config_ini_path(
         click_instance=click_instance,
         app_name=app_name,
-        verbose=verbose,
     )
-    if verbose == inf:
+    if gvd:
         ic(cfg)
 
     cfg.parent.mkdir(exist_ok=True)
@@ -231,13 +227,11 @@ def click_write_config_entry(
         key=key,
         keep_case=keep_case,
         value=value,
-        verbose=verbose,
     )
 
     config, config_mtime = click_read_config(
         click_instance=click_instance,
         app_name=app_name,
-        verbose=verbose,
     )
     return config, config_mtime
 
@@ -264,7 +258,6 @@ def click_remove_config_entry(
     config, config_mtime = click_read_config(
         click_instance=click_instance,
         app_name=app_name,
-        verbose=verbose,
     )
     return config, config_mtime
 
@@ -284,6 +277,13 @@ def cli(
         verbose=verbose,
         verbose_inf=verbose_inf,
     )
+    if not verbose:
+        ic.disable()
+    else:
+        ic.enable()
+
+    if verbose_inf:
+        gvd.enable()
 
 
 @cli.command()
@@ -306,17 +306,22 @@ def add(
         verbose=verbose,
         verbose_inf=verbose_inf,
     )
-    if verbose:
-        ic(dir(ctx))
+    if not verbose:
+        ic.disable()
+    else:
+        ic.enable()
+
+    if verbose_inf:
+        gvd.enable()
+
+    ic(dir(ctx))
 
     global APP_NAME
     config, config_mtime = click_read_config(
         click_instance=click,
-        app_name=APP_NAME,
-        verbose=verbose,
-    )
-    if verbose:
-        ic(config, config_mtime)
+        app_name=APP_NAME,)
+
+    ic(config, config_mtime)
 
     section = "test_section"
     key = "test_key"
@@ -327,10 +332,8 @@ def add(
         section=section,
         key=key,
         value=value,
-        verbose=verbose,
     )
-    if verbose:
-        ic(config)
+    ic(config)
 
 
 @cli.command("list")
@@ -349,14 +352,19 @@ def show(
         verbose=verbose,
         verbose_inf=verbose_inf,
     )
-    if verbose:
-        ic(dir(ctx))
+    if not verbose:
+        ic.disable()
+    else:
+        ic.enable()
+
+    if verbose_inf:
+        gvd.enable()
+
+    ic(dir(ctx))
 
     global APP_NAME
     config, config_mtime = click_read_config(
         click_instance=click,
         app_name=APP_NAME,
-        verbose=verbose,
     )
-    if verbose:
-        ic(config, config_mtime)
+    ic(config, config_mtime)
