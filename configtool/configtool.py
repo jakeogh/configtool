@@ -1,31 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
-
+# pylint: disable=useless-suppression             # [I0021]
 # pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
-# pylint: disable=C0114  #      Missing module docstring (missing-module-docstring)
-# pylint: disable=fixme                           # [W0511] todo is encouraged
+# pylint: disable=missing-param-doc               # [W9015]
+# pylint: disable=missing-module-docstring        # [C0114]
+# pylint: disable=fixme                           # [W0511] todo encouraged
 # pylint: disable=line-too-long                   # [C0301]
 # pylint: disable=too-many-instance-attributes    # [R0902]
 # pylint: disable=too-many-lines                  # [C0302] too many lines in module
-# pylint: disable=invalid-name                    # [C0103] single letter var names, name too descriptive
+# pylint: disable=invalid-name                    # [C0103] single letter var names, name too descriptive(!)
 # pylint: disable=too-many-return-statements      # [R0911]
 # pylint: disable=too-many-branches               # [R0912]
 # pylint: disable=too-many-statements             # [R0915]
 # pylint: disable=too-many-arguments              # [R0913]
 # pylint: disable=too-many-nested-blocks          # [R1702]
 # pylint: disable=too-many-locals                 # [R0914]
+# pylint: disable=too-many-public-methods         # [R0904]
 # pylint: disable=too-few-public-methods          # [R0903]
 # pylint: disable=no-member                       # [E1101] no member for base
 # pylint: disable=attribute-defined-outside-init  # [W0201]
 # pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
+
 
 from __future__ import annotations
 
 import configparser
 import errno
 import os
-from math import inf
 from pathlib import Path
 from signal import SIG_DFL
 from signal import SIGPIPE
@@ -55,7 +57,6 @@ def get_config_directory(
     *,
     click_instance,
     app_name: str,
-    verbose: bool | int | float = False,
 ):
     ic(click_instance, click_instance.get_app_dir(app_name))
     assert len(app_name) > 0
@@ -68,7 +69,6 @@ def get_config_ini_path(
     *,
     click_instance,
     app_name: str,
-    verbose: bool | int | float = False,
 ):
     cfg_dir = get_config_directory(
         click_instance=click_instance,
@@ -83,7 +83,6 @@ def get_data_dir(
     *,
     click_instance,
     app_name: str,
-    verbose: bool | int | float = False,
 ):
     cfg_dir = get_config_directory(
         click_instance=click_instance,
@@ -100,7 +99,6 @@ def read_config(
     *,
     path: Path,
     keep_case: bool,
-    verbose: bool | int | float = False,
 ):
     parser = configparser.RawConfigParser(delimiters=("\t",))
     if keep_case:
@@ -125,7 +123,6 @@ def click_read_config(
     app_name: str,
     last_mtime=None,
     keep_case: bool = True,
-    verbose: bool | int | float = False,
 ):
     cfg = get_config_ini_path(
         click_instance=click_instance,
@@ -161,7 +158,6 @@ def write_config_entry(
     keep_case: bool = True,
     key: None | str = None,
     value: None | str = None,
-    verbose: bool | int | float = False,
 ) -> None:
     parser = configparser.RawConfigParser(delimiters=("\t",))
     if keep_case:
@@ -200,7 +196,6 @@ def click_write_config_entry(
     keep_case: bool = True,
     key: None | str = None,
     value: None | str = None,
-    verbose: bool | int | float = False,
 ):
     if gvd:
         ic(app_name, section, key, value)
@@ -243,7 +238,6 @@ def click_remove_config_entry(
     section: str,
     key: str,
     value: str,
-    verbose: bool | int | float = False,
 ):
     cfg = Path(os.path.join(click_instance.get_app_dir(app_name), "config.ini"))
     parser = configparser.RawConfigParser()
@@ -269,7 +263,7 @@ def cli(
     ctx,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     ctx.ensure_object(dict)
     tty, verbose = tv(
@@ -299,7 +293,7 @@ def add(
     value: None | str,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -319,7 +313,8 @@ def add(
     global APP_NAME
     config, config_mtime = click_read_config(
         click_instance=click,
-        app_name=APP_NAME,)
+        app_name=APP_NAME,
+    )
 
     ic(config, config_mtime)
 
@@ -345,7 +340,7 @@ def show(
     section: None | str,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
