@@ -36,14 +36,13 @@ from asserttool import ic
 from click_auto_help import AHGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
-from clicktool import tv
+from clicktool import tvicgvd
 from globalverbose import gvd
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
 
 signal(SIGPIPE, SIG_DFL)
 
-global APP_NAME
 APP_NAME = "configtool"
 
 
@@ -264,18 +263,13 @@ def cli(
     verbose: bool = False,
 ):
     ctx.ensure_object(dict)
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
-    if not verbose:
-        ic.disable()
-    else:
-        ic.enable()
-
-    if verbose_inf:
-        gvd.enable()
 
 
 @cli.command()
@@ -293,18 +287,13 @@ def add(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
-    if not verbose:
-        ic.disable()
-    else:
-        ic.enable()
-
-    if verbose_inf:
-        gvd.enable()
 
     ic(dir(ctx))
 
@@ -340,18 +329,13 @@ def show(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
-    if not verbose:
-        ic.disable()
-    else:
-        ic.enable()
-
-    if verbose_inf:
-        gvd.enable()
 
     ic(dir(ctx))
 
