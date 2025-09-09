@@ -55,10 +55,10 @@ def get_config_directory(
     click_instance,
     app_name: str,
 ):
-    ic(click_instance, click_instance.get_app_dir(app_name))
+    # ic(click_instance, click_instance.get_app_dir(app_name))
     assert len(app_name) > 0
     result = Path(click_instance.get_app_dir(app_name))
-    ic(result)
+    # ic(result)
     return result
 
 
@@ -295,7 +295,7 @@ def add(
         gvd=gvd,
     )
 
-    ic(dir(ctx))
+    # ic(dir(ctx))
 
     global APP_NAME
     config, config_mtime = click_read_config(
@@ -303,7 +303,7 @@ def add(
         app_name=APP_NAME,
     )
 
-    ic(config, config_mtime)
+    # ic(config, config_mtime)
 
     section = "test_section"
     key = "test_key"
@@ -315,7 +315,7 @@ def add(
         key=key,
         value=value,
     )
-    ic(config)
+    # ic(config)
 
 
 @cli.command("list")
@@ -337,11 +337,11 @@ def show(
         gvd=gvd,
     )
 
-    ic(dir(ctx))
+    # ic(dir(ctx))
 
     global APP_NAME
     config, config_mtime = click_read_config(
         click_instance=click,
         app_name=APP_NAME,
     )
-    ic(config, config_mtime)
+    # ic(config, config_mtime)
