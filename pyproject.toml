@@ -1,0 +1,45 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "configtool"
+version = "0.0.1760907511"
+description = "Short explination of what it does _here_"
+authors = [
+    { name = "Justin Keogh", email = "github.com@v6y.net" },
+]
+dependencies = [
+    "asserttool @ git+https://github.com/jakeogh/asserttool",
+    "click-auto-help @ git+https://github.com/jakeogh/click-auto-help",
+    "clicktool @ git+https://github.com/jakeogh/clicktool",
+    "globalverbose @ git+https://github.com/jakeogh/globalverbose",
+    "retry-on-exception @ git+https://github.com/jakeogh/retry-on-exception",
+    "timetool @ git+https://github.com/jakeogh/timetool",
+]
+requires-python = ">=3.11"
+
+[project.license]
+text = "ISC"
+
+[project.urls]
+Homepage = "https://github.com/jakeogh/configtool"
+
+[project.scripts]
+configtool = "configtool.configtool:cli"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+exclude = [
+    "tests",
+]
+
+[tool.setuptools.package-data]
+configtool = [
+    "py.typed",
+]
