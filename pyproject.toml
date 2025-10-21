@@ -5,7 +5,7 @@ backend-path = ["."]
 
 [project]
 name = "configtool"
-version = "0.0.1761033988"
+version = "0.0.1761040348"
 description = "Short explination of what it does _here_"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
@@ -36,5 +36,12 @@ configtool = [
 
 [tool.pep508-url-version-backend]
 dependencies-indexed = []
-dependencies-git = ["asserttool @ git+https://github.com/jakeogh/asserttool", "click-auto-help @ git+https://github.com/jakeogh/click-auto-help", "clicktool @ git+https://github.com/jakeogh/clicktool", "globalverbose @ git+https://github.com/jakeogh/globalverbose", "retry-on-exception @ git+https://github.com/jakeogh/retry-on-exception", "timetool @ git+https://github.com/jakeogh/timetool"]
+dependencies-git = [
+	"asserttool @ git+https://github.com/jakeogh/asserttool", 
+	"click-auto-help @ git+https://github.com/jakeogh/click-auto-help", 
+	"clicktool @ git+https://github.com/jakeogh/clicktool", 
+	"globalverbose @ git+https://github.com/jakeogh/globalverbose", 
+	"retry-on-exception @ git+https://github.com/jakeogh/retry-on-exception", 
+	"timetool @ git+https://github.com/jakeogh/timetool"
+]
 index-urls = ["jakeogh.github.io", "pip-index"]
