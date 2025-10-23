@@ -5,7 +5,7 @@ backend-path = ["."]
 
 [project]
 name = "configtool"
-version = "1!0.0.1761253502"
+version = "1!0.0.1761253926"
 description = "Short explination of what it does _here_"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
@@ -35,7 +35,7 @@ configtool = [
 ]
 
 [tool.pep508-url-version-backend]
-dependencies-indexed = ["asserttool>=1!0.0.1761250315", "click-auto-help>=0.0.1761041641", "clicktool>=0.0.1761033403", "globalverbose>=0.0.1761031290", "retry-on-exception>=0.0.1761194539", "timetool>=1!0.0.1761252659"]
+dependencies-indexed = ["asserttool>=1!0.0.1761250315", "click-auto-help>=0.0.1761041641", "clicktool>=0.0.1761033403", "globalverbose>=0.0.1761031290", "retry-on-exception>=0.0.1761194539", "timetool>=1!0.0.1761253882"]
 dependencies-git = [
 	"asserttool @ git+https://github.com/jakeogh/asserttool", 
 	"click-auto-help @ git+https://github.com/jakeogh/click-auto-help", 
