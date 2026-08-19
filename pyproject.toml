@@ -1,16 +1,23 @@
 [build-system]
-requires = ["setuptools>=61.0", "tomlkit"]
-build-backend = "pep508_url_version_backend"
-backend-path = ["."]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "configtool"
-version = "1!0.0.1785931859"
+version = "1!0.0.1787109877"
 description = "Short explination of what it does _here_"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
 ]
-dependencies = []
+dependencies = [
+    "click",
+    "asserttool @ git+https://github.com/jakeogh/asserttool@4bd23a06c2161e488415acde89c29537e6720cc1",
+    "click-auto-help @ git+https://github.com/jakeogh/click-auto-help@c53f57c78529a51ae9b03f579d7ee6f2d63ca03a",
+    "clicktool @ git+https://github.com/jakeogh/clicktool@a9894f9d3a06701c5f73cd8b2794028042c9b420",
+    "globalverbose @ git+https://github.com/jakeogh/globalverbose@59abc758c18c0b85e9e61c1e14e5a64a81bb220e",
+    "retry-on-exception @ git+https://github.com/jakeogh/retry-on-exception@872a0c9e578e207ac1340987fb551381d17030db",
+    "timetool @ git+https://github.com/jakeogh/timetool@41dcc2f92afb23fdf0a255a1f727befac65bed3e",
+]
 license = "ISC"
 requires-python = ">=3.11"
 
@@ -34,15 +41,3 @@ configtool = [
     "py.typed",
 ]
 
-[tool.pep508-url-version-backend]
-dependencies-indexed = ["click", "asserttool>=1!0.0.1785542140", "click-auto-help>=1!0.0.1784680961", "clicktool>=1!0.0.1785930957", "globalverbose>=1!0.0.1784686617", "retry-on-exception>=1!0.0.1784244417", "timetool>=1!0.0.1785931790"]
-dependencies-git = [
-	"click",
-	"asserttool @ git+https://github.com/jakeogh/asserttool", 
-	"click-auto-help @ git+https://github.com/jakeogh/click-auto-help", 
-	"clicktool @ git+https://github.com/jakeogh/clicktool", 
-	"globalverbose @ git+https://github.com/jakeogh/globalverbose", 
-	"retry-on-exception @ git+https://github.com/jakeogh/retry-on-exception", 
-	"timetool @ git+https://github.com/jakeogh/timetool"
-]
-index-urls = ["jakeogh.github.io", "pip-index"]
