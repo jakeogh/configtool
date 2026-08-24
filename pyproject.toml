@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "configtool"
-version = "1!0.0.1787109877"
+version = "1!0.0.1787556732"
 description = "Short explination of what it does _here_"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
@@ -13,10 +13,9 @@ dependencies = [
     "click",
     "asserttool @ git+https://github.com/jakeogh/asserttool@4bd23a06c2161e488415acde89c29537e6720cc1",
     "click-auto-help @ git+https://github.com/jakeogh/click-auto-help@c53f57c78529a51ae9b03f579d7ee6f2d63ca03a",
-    "clicktool @ git+https://github.com/jakeogh/clicktool@a9894f9d3a06701c5f73cd8b2794028042c9b420",
-    "globalverbose @ git+https://github.com/jakeogh/globalverbose@59abc758c18c0b85e9e61c1e14e5a64a81bb220e",
+    "clicktool @ git+https://github.com/jakeogh/clicktool@7294ba6934225c028e48638fc0540bc57238ff00",
     "retry-on-exception @ git+https://github.com/jakeogh/retry-on-exception@872a0c9e578e207ac1340987fb551381d17030db",
-    "timetool @ git+https://github.com/jakeogh/timetool@41dcc2f92afb23fdf0a255a1f727befac65bed3e",
+    "timetool @ git+https://github.com/jakeogh/timetool@682de6f836ffbc03ad48b91126e500392c8898e5",
 ]
 license = "ISC"
 requires-python = ">=3.11"

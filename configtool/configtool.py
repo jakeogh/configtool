@@ -16,8 +16,7 @@ from asserttool import ic
 from click_auto_help import AHGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
-from clicktool import tvicgvd
-from globalverbose import gvd
+from clicktool import tvic
 from retry_on_exception import retry_on_exception
 from timetool import get_mtime
 
@@ -82,14 +81,12 @@ def read_config(
         parser.optionxform = str
     parser.read([path])
     rv = {}
-    if gvd:
-        ic(parser.sections())
+    ic(parser.sections())
     for section in parser.sections():
         rv[section] = {}
         for key, value in parser.items(section):
             rv[section][key] = value
-    if gvd:
-        ic(rv)
+    ic(rv)
 
     return rv
 
@@ -116,8 +113,7 @@ def click_read_config(
             raise ConfigUnchangedError
 
     cfg.parent.mkdir(exist_ok=True)
-    if gvd:
-        ic(cfg)
+    ic(cfg)
 
     rv = read_config(path=cfg, keep_case=keep_case)
 
@@ -174,13 +170,12 @@ def click_write_config_entry(
     key: None | str = None,
     value: None | str = None,
 ):
-    if gvd:
-        ic(
-            app_name,
-            section,
-            key,
-            value,
-        )
+    ic(
+        app_name,
+        section,
+        key,
+        value,
+    )
 
     assert isinstance(section, str)
     if key:
@@ -194,8 +189,7 @@ def click_write_config_entry(
         click_instance=click_instance,
         app_name=app_name,
     )
-    if gvd:
-        ic(cfg)
+    ic(cfg)
 
     cfg.parent.mkdir(exist_ok=True)
     write_config_entry(
@@ -248,12 +242,11 @@ def cli(
     verbose: bool = False,
 ):
     ctx.ensure_object(dict)
-    tty, verbose = tvicgvd(
+    _tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
 
 
@@ -272,12 +265,11 @@ def add(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tvicgvd(
+    _tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
 
     # ic(dir(ctx))
@@ -314,12 +306,11 @@ def show(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tvicgvd(
+    _tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
 
     # ic(dir(ctx))
